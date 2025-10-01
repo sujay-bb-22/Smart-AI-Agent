@@ -1,0 +1,113 @@
+/* Reset and base styles */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.App {
+  text-align: center;
+}
+
+/* Header */
+.App-header {
+  background-color: #4f46e5;
+  color: white;
+  padding: 30px 20px;
+  font-size: 2rem;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Main container */
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Heading inside container */
+.container h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #4f46e5;
+}
+
+/* Input field */
+input[type="text"] {
+  width: 70%;
+  padding: 12px;
+  margin-right: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+}
+
+/* Button */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4f46e5;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #4338ca;
+}
+
+/* Answer box */
+.answer-box {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #eef2ff;
+  border-radius: 8px;
+  font-size: 1rem;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+/* PDF upload section */
+.upload-box {
+  margin-top: 30px;
+  padding: 15px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+}
+
+.upload-box input[type="file"] {
+  margin-top: 10px;
+}
+
+/* Footer */
+footer {
+  margin-top: 40px;
+  padding: 20px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  input[type="text"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .container {
+    padding: 20px;
+  }
+}
