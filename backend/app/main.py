@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware  # type: ignore
 from sqlalchemy.orm import Session  # type: ignore
 from pydantic import BaseModel  # type: ignore
 import os
-
+from fastapi import HTTPException, Header # type: ignore
 from .pdf_ingest import save_file_locally, upload_to_s3, USE_S3
 from .qa_pipeline import answer_question
 from .billing import record_usage
@@ -107,3 +107,20 @@ def get_usage(db: Session = Depends(get_db)):
     """
     count = db.query(models.ReportUsage).count()
     return {"reports_generated": count}
+
+
+@app.post("/ingest/")
+async def ingest_pdf(file: UploadFile = File(...), x_api_key: str = Header(None)):
+    # Optional: require an API key header in production
+    if os.getenv("INGEST_API_KEY") and x_api_key != os.getenv("INGEST_API_KEY"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    # save file locally
+    local_path = os.path.join(UPLOAD_DIR, file.filename)
+    with open(local_path, "wb") as f:
+        f.write(await file.read())
+
+    # build index from this file (you can also pass multiple files)
+    from .vector_index import build_index_from_paths
+    build_index_from_paths([local_path])
+    return {"status": "ok", "filename": file.filename}
