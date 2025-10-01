@@ -12,7 +12,7 @@ function App() {
     if (!question) return;
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/ask/?question=${encodeURIComponent(question)}`
+        `/ask/?question=${encodeURIComponent(question)}`
       );
       const data = await res.json();
       setAnswer(data.answer || JSON.stringify(data));
@@ -25,7 +25,7 @@ function App() {
   // Fetch usage API call
   const fetchUsage = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/usage/");
+      const res = await fetch("/usage/");
       const data = await res.json();
       setUsage(data.reports_generated || 0);
     } catch (err) {
@@ -45,7 +45,7 @@ function App() {
     formData.append("file", pdfFile);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/upload_pdf", {
+      const res = await fetch("/upload_pdf", {
         method: "POST",
         body: formData,
       });

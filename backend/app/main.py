@@ -1,9 +1,11 @@
-from fastapi import FastAPI, UploadFile, File, Depends  # type: ignore
-from fastapi.middleware.cors import CORSMiddleware  # type: ignore
-from sqlalchemy.orm import Session  # type: ignore
-from pydantic import BaseModel  # type: ignore
 import os
-from fastapi import HTTPException, Header # type: ignore
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Header
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
+from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
 from .pdf_ingest import save_file_locally, upload_to_s3, USE_S3
 from .qa_pipeline import answer_question
 from .billing import record_usage
@@ -24,13 +26,17 @@ def get_db():
 # ---------- FastAPI app ----------
 app = FastAPI(title="Smart Research Assistant")
 
-# Allow frontend (CORS)
+# ---------- CORS Middleware ----------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # change to frontend domain in production
+    allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
+
+# ---------- Mount static files ----------
+app.mount("/static", StaticFiles(directory="../frontend/build/static"), name="static")
 
 # ---------- Request Models ----------
 class QuestionRequest(BaseModel):
@@ -41,10 +47,6 @@ UPLOAD_DIR = "./data/pdfs"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ---------- Routes ----------
-@app.get("/")
-def root():
-    """Health check / root endpoint."""
-    return {"message": "Smart Research Assistant is running 🚀"}
 
 @app.post("/upload_pdf/")
 async def upload_pdf(file: UploadFile = File(...)):
@@ -124,3 +126,8 @@ async def ingest_pdf(file: UploadFile = File(...), x_api_key: str = Header(None)
     from .vector_index import build_index_from_paths
     build_index_from_paths([local_path])
     return {"status": "ok", "filename": file.filename}
+
+@app.get("/{full_path:path}")
+async def serve_frontend(full_path: str):
+    """Serve the frontend for all other routes."""
+    return FileResponse("../frontend/build/index.html")
