@@ -1,0 +1,39 @@
+databases:
+  - name: sra_db
+    databaseName: sra_db
+    user: sra_user
+    plan: free
+
+services:
+  - type: web
+    name: backend
+    runtime: docker
+    repo: https://github.com/your-repo/your-project.git # Change this to your repo
+    region: oregon
+    plan: free
+    healthCheckPath: /health
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sra_db
+          property: connectionString
+      - key: OPENAI_API_KEY
+        sync: false # Add your OpenAI key in the Render dashboard
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: backend
+          property: url
+
+  - type: static
+    name: frontend
+    repo: https://github.com/your-repo/your-project.git # Change this to your repo
+    region: oregon
+    plan: free
+    branch: main
+    buildFilter:
+      paths:
+      - frontend/**
+    buildCommand: npm --prefix frontend install && npm --prefix frontend run build
+    staticPublishPath: frontend/build
