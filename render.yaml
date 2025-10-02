@@ -1,40 +1,30 @@
 databases:
-  - name: sra_db
-    databaseName: sra_db
-    user: sra_user
-    plan: free
+- name: sra_db
+  plan: free
 
 services:
-  - type: web
-    name: backend
-    runtime: docker
-    repo: https://github.com/your-repo/your-project.git # IMPORTANT: Change this to your repo URL
-    region: oregon
-    plan: free
-    healthCheckPath: /health
-    dockerfilePath: ./backend/Dockerfile
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: sra_db
-          property: connectionString
-      - key: OPENAI_API_KEY
-        sync: false # Add your OpenAI key in the Render dashboard
+- type: web
+  name: backend
+  runtime: docker
+  repo: https://github.com/Sujay-22/Smart-AI-Agent.git # Change this to your repo URL
+  healthCheckPath: /health
+  dockerfilePath: ./backend/Dockerfile
+  envVars:
+  - key: DATABASE_URL
+    fromDatabase:
+      name: sra_db
+      property: connectionString
+  - key: OPENAI_API_KEY
+    sync: false
 
 staticSites:
-  - name: frontend
-    repo: https://github.com/your-repo/your-project.git # IMPORTANT: Change this to your repo URL
-    region: oregon
-    plan: free
-    branch: main
-    buildFilter:
-      paths:
-        - frontend/**
-    buildCommand: "npm --prefix frontend install && npm --prefix frontend run build"
-    staticPublishPath: frontend/build
-    envVars:
-      - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: backend
-          property: url
+- name: frontend
+  repo: https://github.com/Sujay-22/Smart-AI-Agent.git # Change this to your repo URL
+  buildCommand: npm --prefix frontend install && npm --prefix frontend run build
+  staticPublishPath: frontend/build
+  envVars:
+  - key: REACT_APP_API_URL
+    fromService:
+      type: web
+      name: backend
+      property: url
