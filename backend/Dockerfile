@@ -2,6 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Add the app directory to the PYTHONPATH
+ENV PYTHONPATH=/app
+
 # Copy requirements from the backend folder and install dependencies
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
