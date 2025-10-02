@@ -15,3 +15,4 @@ alembic
 psycopg2-binary
 python-dotenv
 langchain-openai
+langchain-community
