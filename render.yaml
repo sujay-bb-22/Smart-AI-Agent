@@ -15,11 +15,12 @@ services:
       - key: OPENAI_API_KEY
         sync: false
 
-  - type: static_site
+  - type: web
     name: frontend
+    env: node
     repo: https://github.com/Sujay-22/Smart-AI-Agent.git
     buildCommand: "npm --prefix frontend install && npm --prefix frontend run build"
-    staticPublishPath: frontend/build
+    startCommand: "npx serve -s frontend/build"
     envVars:
       - key: REACT_APP_API_URL
         fromService:
