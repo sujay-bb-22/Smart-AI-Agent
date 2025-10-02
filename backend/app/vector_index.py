@@ -2,7 +2,7 @@
 import os
 from langchain_community.document_loaders import PyPDFLoader  # type: ignore
 from langchain_openai import OpenAIEmbeddings  # type: ignore
-from langchain.vectorstores import FAISS  # type: ignore
+from langchain_community.vectorstores import FAISS  # type: ignore
 from dotenv import load_dotenv  # type: ignore
 
 # Load environment variables
