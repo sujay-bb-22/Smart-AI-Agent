@@ -8,7 +8,7 @@ services:
   - type: web
     name: backend
     runtime: docker
-    repo: https://github.com/Sujay-22/Smart-AI-Agent.git # Change this to your repo
+    repo: https://github.com/your-repo/your-project.git # Change this to your repo
     region: oregon
     plan: free
     healthCheckPath: /health
@@ -20,15 +20,10 @@ services:
           property: connectionString
       - key: OPENAI_API_KEY
         sync: false # Add your OpenAI key in the Render dashboard
-      - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: backend
-          property: url
 
-  - type: static
-    name: frontend
-    repo: https://github.com/Sujay-22/Smart-AI-Agent.git# Change this to your repo
+staticSites:
+  - name: frontend
+    repo: https://github.com/your-repo/your-project.git # Change this to your repo
     region: oregon
     plan: free
     branch: main
@@ -37,3 +32,9 @@ services:
       - frontend/**
     buildCommand: npm --prefix frontend install && npm --prefix frontend run build
     staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: backend
+          property: url
