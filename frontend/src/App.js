@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
 
+// Use the environment variable for the API URL
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
 function App() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -11,8 +14,9 @@ function App() {
   const askQuestion = async () => {
     if (!question) return;
     try {
+      // Construct the full API URL
       const res = await fetch(
-        `/ask/?question=${encodeURIComponent(question)}`
+        `${API_URL}/ask/?question=${encodeURIComponent(question)}`
       );
       const data = await res.json();
       setAnswer(data.answer || JSON.stringify(data));
@@ -25,7 +29,8 @@ function App() {
   // Fetch usage API call
   const fetchUsage = async () => {
     try {
-      const res = await fetch("/usage/");
+      // Construct the full API URL
+      const res = await fetch(`${API_URL}/usage/`);
       const data = await res.json();
       setUsage(data.reports_generated || 0);
     } catch (err) {
@@ -45,7 +50,8 @@ function App() {
     formData.append("file", pdfFile);
 
     try {
-      const res = await fetch("/upload_pdf", {
+      // Construct the full API URL
+      const res = await fetch(`${API_URL}/upload_pdf`, {
         method: "POST",
         body: formData,
       });
@@ -75,7 +81,7 @@ function App() {
         />
         <button onClick={askQuestion}>Ask</button>
 
-        {answer && <div className="answer-box">{answer}</div>}
+        {answer && <div className="answer-box" >{answer}</div>}
 
         <div className="upload-box">
           <h3>Upload PDF:</h3>
