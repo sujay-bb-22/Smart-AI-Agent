@@ -25,12 +25,18 @@ def get_db():
 app = FastAPI(title="Smart Research Assistant")
 
 # ---------- CORS Middleware ----------
+# In production, you should restrict this to your frontend's domain
+origins = [
+    "http://localhost:3000",
+    "https://frontend-4mzl.onrender.com",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 # ---------- Health Check ----------
