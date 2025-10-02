@@ -1,7 +1,5 @@
 import os
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Header
-from fastapi.staticfiles import StaticFiles
-from starlette.responses import FileResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,9 +32,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
-# ---------- Mount static files ----------
-app.mount("/static", StaticFiles(directory="../frontend/build/static"), name="static")
 
 # ---------- Request Models ----------
 class QuestionRequest(BaseModel):
@@ -126,8 +121,3 @@ async def ingest_pdf(file: UploadFile = File(...), x_api_key: str = Header(None)
     from .vector_index import build_index_from_paths
     build_index_from_paths([local_path])
     return {"status": "ok", "filename": file.filename}
-
-@app.get("/{full_path:path}")
-async def serve_frontend(full_path: str):
-    """Serve the frontend for all other routes."""
-    return FileResponse("../frontend/build/index.html")
