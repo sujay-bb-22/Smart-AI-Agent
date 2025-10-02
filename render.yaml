@@ -6,7 +6,7 @@ services:
 - type: web
   name: backend
   runtime: docker
-  repo: https://github.com/Sujay-22/Smart-AI-Agent.git # Change this to your repo URL
+  repo: https://github.com/Sujay-22/Smart-AI-Agent.git
   healthCheckPath: /health
   dockerfilePath: ./backend/Dockerfile
   envVars:
@@ -19,8 +19,8 @@ services:
 
 staticSites:
 - name: frontend
-  repo: https://github.com/Sujay-22/Smart-AI-Agent.git # Change this to your repo URL
-  buildCommand: npm --prefix frontend install && npm --prefix frontend run build
+  repo: https://github.com/Sujay-22/Smart-AI-Agent.git
+  buildCommand: "npm --prefix frontend install && npm --prefix frontend run build"
   staticPublishPath: frontend/build
   envVars:
   - key: REACT_APP_API_URL
