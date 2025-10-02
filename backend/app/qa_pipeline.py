@@ -22,6 +22,13 @@ def get_retriever(k=4):
     return retriever
 
 def answer_question(question: str):
+    # First, check if the index exists before trying to load it
+    if not os.path.exists("faiss_index"):
+        return {
+            "answer": "I'm ready to answer your questions, but first, you need to provide me with a document to read. Please upload a PDF to get started.",
+            "sources": []
+        }
+
     retriever = get_retriever(k=6)
 
     # Retrieve top docs
