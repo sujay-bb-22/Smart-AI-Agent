@@ -8,7 +8,7 @@ services:
   - type: web
     name: backend
     runtime: docker
-    repo: https://github.com/your-repo/your-project.git # Change this to your repo
+    repo: https://github.com/your-repo/your-project.git # IMPORTANT: Change this to your repo URL
     region: oregon
     plan: free
     healthCheckPath: /health
@@ -23,14 +23,14 @@ services:
 
 staticSites:
   - name: frontend
-    repo: https://github.com/your-repo/your-project.git # Change this to your repo
+    repo: https://github.com/your-repo/your-project.git # IMPORTANT: Change this to your repo URL
     region: oregon
     plan: free
     branch: main
     buildFilter:
       paths:
-      - frontend/**
-    buildCommand: npm --prefix frontend install && npm --prefix frontend run build
+        - frontend/**
+    buildCommand: "npm --prefix frontend install && npm --prefix frontend run build"
     staticPublishPath: frontend/build
     envVars:
       - key: REACT_APP_API_URL
