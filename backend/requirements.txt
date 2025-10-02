@@ -14,3 +14,4 @@ pypdf
 alembic
 psycopg2-binary
 python-dotenv
+langchain-openai
