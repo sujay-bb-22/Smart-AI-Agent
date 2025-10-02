@@ -33,6 +33,11 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+# ---------- Health Check ----------
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 # ---------- Request Models ----------
 class QuestionRequest(BaseModel):
     question: str
