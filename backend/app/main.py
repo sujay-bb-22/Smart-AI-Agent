@@ -110,3 +110,10 @@ def get_usage(db: Session = Depends(get_db)):
     """
     count = db.query(models.ReportUsage).count()
     return {"reports_generated": count}
+
+if __name__ == "__main__":
+    import uvicorn
+    # Render dynamically sets the PORT environment variable
+    port = int(os.environ.get("PORT", 8000))
+    # We must listen on 0.0.0.0 for Render to be able to route traffic to the container
+    uvicorn.run(app, host="0.0.0.0", port=port)
