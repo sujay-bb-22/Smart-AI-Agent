@@ -22,11 +22,16 @@ services:
     startCommand: "npx serve -s frontend/build"
     plan: free
     envVars:
-      - key: REACT_APP_API_URL
+      - key: REACT_APP_API_HOST
         fromService:
           type: web
           name: backend
-          property: url
+          property: host
+      - key: REACT_APP_API_PORT
+        fromService:
+          type: web
+          name: backend
+          property: port
 
 databases:
   - name: sra_db
