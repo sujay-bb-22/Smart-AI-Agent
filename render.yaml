@@ -8,7 +8,7 @@ services:
   - type: web
     name: backend
     runtime: docker
-    repo: https://github.com/your-repo/your-project.git # Change this to your repo
+    repo: https://github.com/Sujay-22/Smart-AI-Agent.git # Change this to your repo
     region: oregon
     plan: free
     healthCheckPath: /health
@@ -28,7 +28,7 @@ services:
 
   - type: static
     name: frontend
-    repo: https://github.com/your-repo/your-project.git # Change this to your repo
+    repo: https://github.com/Sujay-22/Smart-AI-Agent.git# Change this to your repo
     region: oregon
     plan: free
     branch: main
