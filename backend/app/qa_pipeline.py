@@ -5,6 +5,9 @@ from langchain_openai import ChatOpenAI  # type: ignore
 from langchain.chains import RetrievalQA  # type: ignore
 from langchain.prompts import PromptTemplate  # type: ignore
 from .vector_index import load_index
+from langchain_community.tools import TavilySearchResults
+from unstructured.partition.auto import partition
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -22,17 +25,28 @@ def get_retriever(k=4):
     return retriever
 
 def answer_question(question: str):
-    # First, check if the index exists before trying to load it
+    # If the local index doesn't exist, use the search tool
     if not os.path.exists("faiss_index"):
+        search = TavilySearchResults()
+        tavily_answer = search.invoke(question)
         return {
-            "answer": "I'm ready to answer your questions, but first, you need to provide me with a document to read. Please upload a PDF to get started.",
+            "answer": tavily_answer,
             "sources": []
         }
-
+    
     retriever = get_retriever(k=6)
 
     # Retrieve top docs
     docs = retriever.get_relevant_documents(question)
+
+    # If no relevant documents are found, use the search tool
+    if not docs:
+        search = TavilySearchResults()
+        tavily_answer = search.invoke(question)
+        return {
+            "answer": tavily_answer,
+            "sources": []
+        }
 
     # Build a multi-perspective prompt
     template = """You are an expert research assistant.
@@ -59,7 +73,7 @@ Evidence:
         openai_api_key=OPENAI_API_KEY
     )
 
-    response = llm(prompt.format(question=question, evidence=evidence))
+    response = llm.invoke(prompt.format(question=question, evidence=evidence))
 
     # Return text and a small list of sources for clickable evidence
     sources = [

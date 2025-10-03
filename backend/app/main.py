@@ -47,17 +47,16 @@ def health_check():
 class QuestionRequest(BaseModel):
     question: str
 
-# ---------- PDF Storage Directory ----------
-# This is the correct, permanent location for uploaded PDFs
-UPLOAD_DIR = "./data/pdfs"
+# ---------- File Storage Directory ----------
+UPLOAD_DIR = "./data/files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ---------- Core Routes ----------
 
-@app.post("/upload_pdf/")
-async def upload_and_ingest_pdf(file: UploadFile = File(...)):
+@app.post("/upload_file/")
+async def upload_and_ingest_file(file: UploadFile = File(...)):
     """
-    Receives a PDF file, saves it to a permanent location, and immediately
+    Receives a file, saves it to a permanent location, and immediately
     ingests its content into the vector index.
     """
     try:
