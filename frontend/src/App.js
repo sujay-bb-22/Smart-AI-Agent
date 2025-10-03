@@ -9,6 +9,7 @@ function App() {
   const [answer, setAnswer] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
   const [usage, setUsage] = useState(0);
+  const [inputType, setInputType] = useState("text"); // 'text' or 'file'
 
   // Ask question API call
   const askQuestion = async () => {
@@ -72,24 +73,34 @@ function App() {
       <header className="App-header">Smart Research Assistant 🚀</header>
 
       <div className="container">
-        <h2>Ask your question:</h2>
-        <input
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Type your question here..."
-        />
-        <button onClick={askQuestion}>Ask</button>
-
-        {answer && <div className="answer-box" >{answer}</div>}
-
-        <div className="upload-box">
-          <h3>Upload PDF:</h3>
-          <input type="file" accept=".pdf" onChange={handleFileChange} />
-          <button onClick={uploadPdf} style={{ marginTop: "10px" }}>
-            Upload
-          </button>
+        <h2>Analyze Data</h2>
+        <div className="input-selection">
+          <select value={inputType} onChange={(e) => setInputType(e.target.value)}>
+            <option value="text">Ask a Question</option>
+            <option value="file">Upload a PDF</option>
+          </select>
         </div>
+
+        {inputType === 'text' ? (
+          <div className="input-area">
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Type your question here..."
+            />
+            <button onClick={askQuestion}>Ask</button>
+          </div>
+        ) : (
+          <div className="input-area">
+            <input type="file" accept=".pdf" onChange={handleFileChange} />
+            <button onClick={uploadPdf} style={{ marginTop: "10px" }}>
+              Upload
+            </button>
+          </div>
+        )}
+
+        {answer && <div className="answer-box">{answer}</div>}
 
         <footer>
           Reports generated: <strong>{usage}</strong>
