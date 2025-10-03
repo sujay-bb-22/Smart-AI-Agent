@@ -6,10 +6,11 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 function App() {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [answer, setAnswer] = useState(null);
   const [file, setFile] = useState(null);
   const [usage, setUsage] = useState(0);
   const [inputType, setInputType] = useState("text"); // 'text' or 'file'
+  const [showSources, setShowSources] = useState(false);
 
   // Ask question API call
   const askQuestion = async () => {
@@ -23,10 +24,10 @@ function App() {
         body: JSON.stringify({ question }),
       });
       const data = await res.json();
-      setAnswer(data.answer || JSON.stringify(data));
+      setAnswer(data);
       fetchUsage(); // refresh usage counter
     } catch (err) {
-      setAnswer("Error fetching answer.");
+      setAnswer({ answer: "Error fetching answer." });
     }
   };
 
@@ -103,7 +104,27 @@ function App() {
           </div>
         )}
 
-        {answer && <div className="answer-box">{answer}</div>}
+        {answer && (
+          <div className="answer-box">
+            {answer.answer}
+            {answer.sources && answer.sources.length > 0 && (
+              <div className="citations">
+                <button onClick={() => setShowSources(!showSources)}>
+                  {showSources ? "Hide Sources" : "Show Sources"}
+                </button>
+                {showSources && (
+                  <ul>
+                    {answer.sources.map((source) => (
+                      <li key={source.id}>
+                        [src{source.id}] {source.source}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         <footer>
           Reports generated: <strong>{usage}</strong>
