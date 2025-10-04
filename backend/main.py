@@ -65,7 +65,7 @@ async def upload_file(file: UploadFile = File(...)):
 
 # --- Static Files and Root ---
 # This must be after all other API routes
-app.mount("/static", StaticFiles(directory="frontend/build/static"), name="static")
+app.mount("/", StaticFiles(directory="frontend/build"), name="static")
 
 @app.get("/{catch_all:path}")
 async def serve_react_app(catch_all: str):

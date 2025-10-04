@@ -1,38 +1,19 @@
 services:
   - type: web
-    name: backend
-    runtime: docker
-    repo: https://github.com/Sujay-22/Smart-AI-Agent.git
-    healthCheckPath: /health
-    dockerfilePath: ./backend/Dockerfile
-    plan: free
+    name: smart-research-assistant
+    env: python
+    buildCommand: |
+      cd frontend
+      npm install
+      npm run build
+      cd ..
+      pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: sra_db
-          property: connectionString
-      - key: OPENAI_API_KEY
-        sync: false
-
-  - type: web
-    name: frontend
-    env: node
-    repo: https://github.com/Sujay-22/Smart-AI-Agent.git
-    buildCommand: "npm --prefix frontend install && npm --prefix frontend run build"
-    startCommand: "npx serve -s frontend/build"
-    plan: free
-    envVars:
-      - key: REACT_APP_API_HOST
-        fromService:
-          type: web
-          name: backend
-          property: host
-      - key: REACT_APP_API_PORT
-        fromService:
-          type: web
-          name: backend
-          property: port
-
-databases:
-  - name: sra_db
-    plan: free
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    rewrites:
+      - source: /api/*
+        destination: /api/*
+      - source: /*
+        destination: /index.html
