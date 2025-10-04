@@ -14,26 +14,9 @@
 }
 
 .container {
-  max-width: 800px; /* Adjusted for a single column layout */
+  max-width: 800px;
   margin: 20px auto;
   padding: 20px;
-}
-
-.input-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.input-area {
-  /* Removed background and shadow, as the parent container now has them */
-  margin-bottom: 20px;
-}
-
-.input-area:last-child {
-  margin-bottom: 0;
 }
 
 input[type="text"], input[type="file"] {
@@ -42,7 +25,7 @@ input[type="text"], input[type="file"] {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 10px;
-  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  box-sizing: border-box; 
 }
 
 button {
@@ -89,7 +72,7 @@ button:hover {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; /* Added margin for spacing */
+  margin-top: 20px; 
 }
 
 .usage-counters p {

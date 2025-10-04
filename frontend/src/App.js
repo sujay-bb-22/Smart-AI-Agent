@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import AskForm from "./components/AskForm";
-import UploadPDF from "./components/UploadPDF";
+import CombinedInput from "./components/CombinedInput";
 import UsageDashboard from "./components/UsageDashboard";
 
 function App() {
@@ -53,10 +52,7 @@ function App() {
       <header className="App-header">Smart Research Assistant 🚀</header>
 
       <div className="container">
-        <div className="input-container">
-          <AskForm onNewAnswer={handleNewAnswer} />
-          <UploadPDF />
-        </div>
+        <CombinedInput onNewAnswer={handleNewAnswer} />
 
         <UsageDashboard />
 
