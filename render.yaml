@@ -1,7 +1,11 @@
+# render.yaml
+# Corrected indentation and added plan.
+
 services:
   - type: web
     name: smart-research-assistant
     env: python
+    plan: free # Explicitly set the plan to avoid defaults
     buildCommand: |
       cd frontend
       npm install
@@ -11,7 +15,7 @@ services:
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: "3.11.0"
     rewrites:
       - source: /api/*
         destination: /api/*
