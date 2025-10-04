@@ -2,7 +2,7 @@ services:
   - type: web
     name: smart-research-assistant
     env: python
-    plan: free # Explicitly set the plan
+    plan: free
     buildCommand: |
       cd frontend
       npm install
@@ -11,5 +11,12 @@ services:
       pip install -r backend/requirements.txt
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: PYTHONPATH
+        value: ./backend
       - key: PYTHON_VERSION
         value: "3.11.0"
+    rewrites:
+      - source: /api/*
+        destination: /api/*
+      - source: /*
+        destination: /index.html
