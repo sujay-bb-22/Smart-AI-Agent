@@ -1,42 +1,38 @@
-import { useState } from "react";
-import { askQuestion } from "../api";
+import React, { useState } from "react";
 
-export default function AskForm() {
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+function AskForm({ onNewAnswer }) {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const askQuestion = async () => {
     if (!question) return;
     try {
-      const res = await askQuestion(question);
-      setAnswer(res.answer);
+      const res = await fetch(`${API_URL}/ask/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question }),
+      });
+      const data = await res.json();
+      onNewAnswer(data);
     } catch (err) {
-      console.error(err);
-      setAnswer("Error: Could not get answer.");
+      onNewAnswer({ answer: "Error fetching answer." });
     }
   };
 
   return (
-    <div>
-      <h2>Ask a Question</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Enter your question"
-          style={{ width: "300px" }}
-          required
-        />
-        <button type="submit" style={{ marginLeft: "10px" }}>Ask</button>
-      </form>
-      {answer && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>Answer:</h3>
-          <p>{answer}</p>
-        </div>
-      )}
+    <div className="input-area">
+      <input
+        type="text"
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        placeholder="Ask a question..."
+      />
+      <button onClick={askQuestion}>Ask</button>
     </div>
   );
 }
+
+export default AskForm;

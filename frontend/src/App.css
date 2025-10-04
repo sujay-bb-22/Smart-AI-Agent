@@ -1,113 +1,99 @@
-/* Reset and base styles */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9fafb;
-  color: #111827;
-}
-
 .App {
   text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  min-height: 100vh;
 }
 
-/* Header */
 .App-header {
-  background-color: #4f46e5;
+  background-color: #2c3e50;
+  padding: 20px;
   color: white;
-  padding: 30px 20px;
   font-size: 2rem;
   font-weight: bold;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Main container */
 .container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 30px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
 }
 
-/* Heading inside container */
-.container h2 {
+.main-content {
+  display: flex;
+  gap: 20px;
+}
+
+.left-panel {
+  flex: 2;
+}
+
+.right-panel {
+  flex: 1;
+}
+
+.input-area {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  font-size: 1.8rem;
-  color: #4f46e5;
 }
 
-/* Input field */
-input[type="text"] {
-  width: 70%;
-  padding: 12px;
-  margin-right: 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 1rem;
+input[type="text"], input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
-/* Button */
 button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  background-color: #4f46e5;
+  background-color: #3498db;
   color: white;
-  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  font-size: 1rem;
 }
 
 button:hover {
-  background-color: #4338ca;
+  background-color: #2980b9;
 }
 
-/* Answer box */
 .answer-box {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #eef2ff;
-  border-radius: 8px;
-  font-size: 1rem;
-  text-align: left;
-  word-wrap: break-word;
-}
-
-/* PDF upload section */
-.upload-box {
-  margin-top: 30px;
-  padding: 15px;
-  border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  background-color: #f3f4f6;
-}
-
-.upload-box input[type="file"] {
-  margin-top: 10px;
-}
-
-/* Footer */
-footer {
-  margin-top: 40px;
+  background-color: white;
   padding: 20px;
-  text-align: center;
-  color: #6b7280;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  text-align: left;
+}
+
+.citations {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.citations ul {
+  list-style: none;
+  padding: 0;
+}
+
+.citations li {
+  margin-bottom: 5px;
   font-size: 0.9rem;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  input[type="text"] {
-    width: 100%;
-    margin-bottom: 10px;
-  }
+.usage-dashboard {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-  button {
-    width: 100%;
-  }
-
-  .container {
-    padding: 20px;
-  }
+.usage-counters p {
+  margin: 10px 0;
 }

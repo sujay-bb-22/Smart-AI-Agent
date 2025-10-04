@@ -1,11 +1,12 @@
 import os
+import asyncio
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import your application modules
-from .qa_pipeline import answer_question
+from .qa_pipeline import answer_question, process_live_data
 from .billing import record_usage
 from .database import SessionLocal, engine
 from . import models
@@ -51,25 +52,23 @@ class QuestionRequest(BaseModel):
 UPLOAD_DIR = "./data/files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# ---------- Background Task for Live Data ----------
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(process_live_data())
+
 # ---------- Core Routes ----------
 
 @app.post("/upload_file/")
 async def upload_and_ingest_file(file: UploadFile = File(...)):
-    """
-    Receives a file, saves it to a permanent location, and immediately
-    ingests its content into the vector index.
-    """
     try:
-        # Read the content of the uploaded file
         content = await file.read()
-
-        # Save the file to the correct permanent directory
         local_path = os.path.join(UPLOAD_DIR, file.filename)
         with open(local_path, "wb") as f:
             f.write(content)
 
-        # Immediately ingest the document into the index
         build_index_from_paths([local_path])
+        record_usage("report_generated", 1)
 
         return {
             "status": "success", 
@@ -77,26 +76,25 @@ async def upload_and_ingest_file(file: UploadFile = File(...)):
             "message": "File uploaded and ingested successfully."
         }
     except Exception as e:
-        # If anything goes wrong, return a detailed error message
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 @app.post("/ask/")
 async def ask_question_route(payload: QuestionRequest, db: Session = Depends(get_db)):
-    """
-    Receives a question, gets an answer from the QA pipeline, and records usage.
-    """
-    # Get the answer from the QA pipeline
+    record_usage("question_asked", 1)
     qa_response = answer_question(payload.question)
 
-    # Record usage in the database (if an actual answer is generated)
     if "sources" in qa_response and qa_response["sources"]:
         try:
-            record_usage(question=payload.question, credits=1) # Example credit usage
-            usage = models.ReportUsage(question=payload.question, response=qa_response["answer"])
+            usage = models.ReportUsage(
+                question=payload.question, 
+                response=qa_response["answer"],
+                credits_used=1
+            )
             db.add(usage)
             db.commit()
             db.refresh(usage)
             qa_response["report_id"] = usage.id
+            record_usage("report_generated", 1)
         except Exception as e:
             print(f"Database or billing error: {e}")
 
@@ -104,15 +102,11 @@ async def ask_question_route(payload: QuestionRequest, db: Session = Depends(get
 
 @app.get("/usage/")
 def get_usage(db: Session = Depends(get_db)):
-    """
-    Returns the total number of reports generated.
-    """
-    count = db.query(models.ReportUsage).count()
-    return {"reports_generated": count}
+    questions_asked = db.query(models.ReportUsage).count()
+    reports_generated = db.query(models.ReportUsage).count() # Simplified for now
+    return {"questions_asked": questions_asked, "reports_generated": reports_generated}
 
 if __name__ == "__main__":
     import uvicorn
-    # Render dynamically sets the PORT environment variable
     port = int(os.environ.get("PORT", 8000))
-    # We must listen on 0.0.0.0 for Render to be able to route traffic to the container
     uvicorn.run(app, host="0.0.0.0", port=port)

@@ -1,35 +1,39 @@
-import { useState } from "react";
-import { uploadPDF } from "../api";
+import React, { useState } from "react";
 
-export default function UploadPDF() {
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
+function UploadPDF() {
   const [file, setFile] = useState(null);
-  const [response, setResponse] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const uploadFile = async () => {
     if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
     try {
-      const res = await uploadPDF(file);
-      setResponse(res);
+      const res = await fetch(`${API_URL}/upload_file/`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      alert(`File uploaded: ${data.filename}`);
     } catch (err) {
-      console.error(err);
-      setResponse({ filename: file.name, location: "Upload failed" });
+      alert("Error uploading file.");
     }
   };
 
   return (
-    <div>
-      <h2>Upload PDF</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <button type="submit" style={{ marginLeft: "10px" }}>Upload</button>
-      </form>
-      {response && (
-        <div style={{ marginTop: "20px" }}>
-          <p><strong>Filename:</strong> {response.filename}</p>
-          <p><strong>Location:</strong> {response.location}</p>
-        </div>
-      )}
+    <div className="input-area">
+      <input type="file" onChange={handleFileChange} />
+      <button onClick={uploadFile} style={{ marginTop: "10px" }}>
+        Upload PDF
+      </button>
     </div>
   );
 }
+
+export default UploadPDF;
