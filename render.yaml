@@ -1,11 +1,8 @@
-# render.yaml
-# Corrected indentation and added plan.
-
 services:
   - type: web
     name: smart-research-assistant
     env: python
-    plan: free # Explicitly set the plan to avoid defaults
+    plan: free # Explicitly set the plan
     buildCommand: |
       cd frontend
       npm install
@@ -16,8 +13,10 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.0"
-    rewrites:
-      - source: /api/*
+    routes:
+      - type: rewrite
+        source: /api/*
         destination: /api/*
-      - source: /*
+      - type: rewrite
+        source: /*
         destination: /index.html
