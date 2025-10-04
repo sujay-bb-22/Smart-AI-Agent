@@ -1,36 +1,49 @@
-import React, { useState } from "react";
-
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+import React, { useState } from 'react';
 
 function AskForm({ onNewAnswer }) {
-  const [question, setQuestion] = useState("");
+  const [question, setQuestion] = useState('');
+  const [error, setError] = useState(null);
 
-  const askQuestion = async () => {
-    if (!question) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!question.trim()) return;
+
     try {
-      const res = await fetch(`${API_URL}/ask/`, {
-        method: "POST",
+      const response = await fetch('/api/qa/', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ question }),
       });
-      const data = await res.json();
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       onNewAnswer(data);
-    } catch (err) {
-      onNewAnswer({ answer: "Error fetching answer." });
+      setError(null);
+    } catch (error) {
+      setError('Error fetching answer.');
+      console.error('There was an error!', error);
     }
+
+    setQuestion('');
   };
 
   return (
     <div className="input-area">
-      <input
-        type="text"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        placeholder="Ask a question..."
-      />
-      <button onClick={askQuestion}>Ask</button>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="What is AI?"
+        />
+        <button type="submit">Ask</button>
+      </form>
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 }
