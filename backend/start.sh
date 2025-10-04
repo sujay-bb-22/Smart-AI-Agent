@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change to the backend directory
+cd backend
+
 # Run database migrations
 echo "Running database migrations..."
 python -m alembic upgrade head

@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 import uvicorn # type: ignore
 from app.qa_pipeline import answer_question
-from app.ingestion_pipeline import process_pdf
+from app.pdf_ingest import process_pdf
 from starlette.responses import FileResponse
 
 # --- App Initialization ---
@@ -65,11 +65,11 @@ async def upload_file(file: UploadFile = File(...)):
 
 # --- Static Files and Root ---
 # This must be after all other API routes
-app.mount("/", StaticFiles(directory="frontend/build"), name="static")
+app.mount("/", StaticFiles(directory="../frontend/build"), name="static")
 
 @app.get("/{catch_all:path}")
 async def serve_react_app(catch_all: str):
-    return FileResponse('frontend/build/index.html')
+    return FileResponse('../frontend/build/index.html')
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
