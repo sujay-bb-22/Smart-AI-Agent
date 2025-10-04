@@ -20,7 +20,9 @@ def generate_mock_data():
 
     while True:
         with open(DATA_SOURCE_FILE, "w") as f:
-            json.dump(articles, f)
+            for article in articles:
+                f.write(json.dumps(article) + '\n')
+
         time.sleep(10) # Update every 10 seconds
         articles.append({
             "id": len(articles) + 1,

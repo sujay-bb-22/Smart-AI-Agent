@@ -16,17 +16,24 @@ if not OPENAI_API_KEY:
     raise ValueError("Missing OPENAI_API_KEY")
 
 # --- Live Data Processing with Pathway ---
-class LiveDataSource(pw.io.json.JSONsInput):
-    def __init__(self, path, **kwargs):
-        super().__init__(path=path, mode="streaming", **kwargs)
-
 async def process_live_data():
     """A Pathway pipeline to process live data updates."""
-    live_data = LiveDataSource(path="./data/live/news.json")
+    live_data = pw.io.jsonlines.read(
+        "./data/live/", 
+        schema=LiveDataSourceSchema, 
+        mode="streaming",
+        autocommit_duration_ms=1000,
+    )
+
     # In a real application, you would add transformations and sinking here.
     # For this demo, we'll just print the data to the console.
     pw.io.printout(live_data)
     pw.run_async()
+
+class LiveDataSourceSchema(pw.Schema):
+    id: int
+    content: str
+    source: str
 
 # --- QA Pipeline ---
 
