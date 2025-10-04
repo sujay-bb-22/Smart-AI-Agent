@@ -53,15 +53,12 @@ function App() {
       <header className="App-header">Smart Research Assistant 🚀</header>
 
       <div className="container">
-        <div className="main-content">
-          <div className="left-panel">
-            <AskForm onNewAnswer={handleNewAnswer} />
-            <UploadPDF />
-          </div>
-          <div className="right-panel">
-            <UsageDashboard />
-          </div>
+        <div className="input-container">
+          <AskForm onNewAnswer={handleNewAnswer} />
+          <UploadPDF />
         </div>
+
+        <UsageDashboard />
 
         {renderAnswer()}
       </div>
