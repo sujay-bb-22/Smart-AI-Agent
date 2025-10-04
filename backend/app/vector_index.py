@@ -5,12 +5,12 @@ from langchain_openai import OpenAIEmbeddings  # type: ignore
 from langchain_community.vectorstores import FAISS  # type: ignore
 from dotenv import load_dotenv  # type: ignore
 
-# Load environment variables
+# Load environment variables from .env file for local development
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
-    raise ValueError("Missing OPENAI_API_KEY. Please set it in your .env file.")
+    raise ValueError("Missing OPENAI_API_KEY. Please set this environment variable in your hosting service (e.g., Render, Vercel).")
 
 INDEX_DIR = os.getenv("INDEX_DIR", "./faiss_index")
 
