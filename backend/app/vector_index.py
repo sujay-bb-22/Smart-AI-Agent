@@ -38,3 +38,16 @@ def load_index(index_dir=INDEX_DIR):
     if os.path.exists(index_dir):
         return FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
     return None
+
+def add_documents_to_index(documents, index_dir=INDEX_DIR):
+    """
+    Adds new documents to an existing FAISS index.
+    """
+    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+    if os.path.exists(index_dir):
+        db = FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
+        db.add_documents(documents)
+    else:
+        db = FAISS.from_documents(documents, embeddings)
+    
+    db.save_local(index_dir)

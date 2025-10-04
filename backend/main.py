@@ -7,6 +7,7 @@ import os
 import uvicorn # type: ignore
 from backend.app.qa_pipeline import answer_question
 from backend.app.pdf_ingest import process_pdf
+from backend.app.vector_index import add_documents_to_index
 from starlette.responses import FileResponse
 
 # --- App Initialization ---
@@ -46,22 +47,26 @@ async def upload_file(file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Invalid file type. Only PDF is allowed.")
     
+    temp_file_path = f"temp_{file.filename}"
     try:
         # Save the uploaded file temporarily
-        temp_file_path = f"temp_{file.filename}"
         with open(temp_file_path, "wb") as buffer:
             buffer.write(await file.read())
         
-        # Start background task for ingestion
-        process_pdf(temp_file_path)
+        # Process the PDF to get documents
+        documents = process_pdf(temp_file_path)
         
-        return {"message": "File received. Ingestion started in the background."}
+        # Add documents to the vector index
+        add_documents_to_index(documents)
+        
+        return {"message": "File uploaded and processed successfully."}
     
     except Exception as e:
-        # Clean up the temp file in case of an error
+        raise HTTPException(status_code=500, detail=f"Failed to process file: {str(e)}")
+    finally:
+        # Clean up the temp file
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
-        raise HTTPException(status_code=500, detail=f"Failed to process file: {str(e)}")
 
 # --- Static Files and Root ---
 # This must be after all other API routes
