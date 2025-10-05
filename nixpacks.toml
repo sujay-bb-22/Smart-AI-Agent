@@ -1,6 +1,18 @@
 # nixpacks.toml
-# This file tells Railway's build system to include Node.js.
+# This file configures the build environment and process for Railway.
 
 [phases.setup]
-# Add the Node.js package (which includes npm) to the build environment.
-nixPkgs = ["pkgs.nodejs-18_x"]
+# Use the latest LTS version of Node.js along with Python.
+nixPkgs = ["pkgs.python311", "pkgs.nodejs-18_x"]
+
+[phases.install]
+# Install frontend dependencies first.
+# We need to specify the path for the command.
+cmds = ["cd frontend && npm install"]
+
+[phases.build]
+# Build the frontend application.
+# We need to specify the path for the command.
+cmds = ["cd frontend && npm run build"]
+
+# The start command is now taken from the Procfile's web process.
