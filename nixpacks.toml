@@ -1,23 +1,24 @@
 # nixpacks.toml
-# This is the single source of truth for building and starting the application.
+# This is the single, authoritative source of truth for building and starting.
+
+# Explicitly declare the languages to use. This removes all auto-detection ambiguity.
+providers = ["python", "node"]
 
 [phases.setup]
 # Define the exact language versions to use.
-# This prevents auto-detection errors.
 nixPkgs = ["pkgs.python311", "pkgs.nodejs-18_x"]
 
 [phases.install]
 # Specify the exact install commands in the correct order.
 cmds = [
     "pip install -r backend/requirements.txt",
-    "cd frontend && npm install"
+    "npm --prefix frontend install" # Use --prefix to be more explicit
 ]
 
 [phases.build]
 # Specify the frontend build command.
-cmds = ["cd frontend && npm run build"]
+cmds = ["npm --prefix frontend run build"]
 
-# Define the start command directly here.
-# This replaces the Procfile.
+# Define the start command directly here, replacing the need for a Procfile.
 [start]
 cmd = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
