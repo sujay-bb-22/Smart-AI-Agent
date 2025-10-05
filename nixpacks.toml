@@ -1,0 +1,6 @@
+# nixpacks.toml
+# This file tells Railway's build system to include Node.js.
+
+[phases.setup]
+# Add the Node.js package (which includes npm) to the build environment.
+nixPkgs = ["pkgs.nodejs-18_x"]
