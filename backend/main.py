@@ -12,17 +12,21 @@ from backend.app.vector_index import add_documents_to_index
 app = FastAPI()
 
 # --- CORS Configuration ---
-# Allows all origins. For production, you should restrict this to your frontend's domain.
+# Allows all origins for Vercel deployment. 
+# For production, you might want to restrict this.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # Allows all origins
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"], # Allows all methods
+    allow_headers=["*"], # Allows all headers
 )
 
 
 # --- API Endpoints ---
+
+# Vercel will route /api requests to this app.
+# The path here is relative to that, so it becomes /api/qa/
 @app.post("/api/qa/")
 async def ask_question(request: dict):
     question = request.get("question")
@@ -33,14 +37,17 @@ async def ask_question(request: dict):
         result = answer_question(question)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Providing more specific error details can be helpful for debugging
+        raise HTTPException(status_code=500, detail=f"Error in QA pipeline: {str(e)}")
 
+# This becomes /api/upload/
 @app.post("/api/upload/")
 async def upload_file(file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Invalid file type. Only PDF is allowed.")
     
-    temp_file_path = f"temp_{file.filename}"
+    # Note: Vercel has a temporary filesystem. This upload will not persist.
+    temp_file_path = f"/tmp/{file.filename}" # Use /tmp directory for Vercel
     try:
         # Save the uploaded file temporarily
         with open(temp_file_path, "wb") as buffer:
@@ -49,10 +56,10 @@ async def upload_file(file: UploadFile = File(...)):
         # Process the PDF to get documents
         documents = process_pdf(temp_file_path)
         
-        # Add documents to the vector index
+        # Add documents to the in-memory vector index
         add_documents_to_index(documents)
         
-        return {"message": "File uploaded and processed successfully."}
+        return {"message": "File uploaded and processed successfully for this session."}
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process file: {str(e)}")
@@ -61,5 +68,7 @@ async def upload_file(file: UploadFile = File(...)):
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# Optional: A root endpoint for testing the API deployment
+@app.get("/api/health")
+def health_check():
+    return {"status": "Backend is running"}
