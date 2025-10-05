@@ -1,25 +1,26 @@
 services:
-  # A Web Service for the Python backend
+  # Backend: FastAPI
   - type: web
     name: backend
     runtime: python
+    plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
 
-  # A Static Site for the React frontend
-  - type: static
+  # Frontend: React (static site)
+  - type: web
     name: frontend
-    # Tell Render where to find the frontend code
+    env: static
     rootDir: frontend
+    plan: free
     buildCommand: "npm install && npm run build"
-    publishPath: "build" # The 'build' directory is created inside 'frontend'
+    staticPublishPath: build
     envVars:
-      # Pass the backend URL to the frontend during the build process
       - key: REACT_APP_API_URL
         fromService:
           type: web
-          name: backend # Must match the name of the backend service
+          name: backend
           property: url
