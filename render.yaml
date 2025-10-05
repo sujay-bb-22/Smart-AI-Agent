@@ -1,23 +1,25 @@
 services:
+  # A Web Service for the Python backend
   - type: web
-    name: smart-research-assistant
-    env: python
-    plan: free
-    buildCommand: |
-      cd frontend
-      npm install
-      npm run build
-      cd ..
-      pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    name: backend
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
-        value: "3.11.0"
-    staticPublishPath: frontend/dist
-    routes:
-      - type: rewrite
-        source: /api/*
-        destination: /api/*
-      - type: rewrite
-        source: /*
-        destination: /index.html
+        value: 3.11.0
+
+  # A Static Site for the React frontend
+  - type: static
+    name: frontend
+    # Tell Render where to find the frontend code
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    publishPath: "build" # The 'build' directory is created inside 'frontend'
+    envVars:
+      # Pass the backend URL to the frontend during the build process
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: backend # Must match the name of the backend service
+          property: url
