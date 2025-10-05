@@ -1,18 +1,23 @@
 # nixpacks.toml
-# This file configures the build environment and process for Railway.
+# This is the single source of truth for building and starting the application.
 
 [phases.setup]
-# Use the latest LTS version of Node.js along with Python.
+# Define the exact language versions to use.
+# This prevents auto-detection errors.
 nixPkgs = ["pkgs.python311", "pkgs.nodejs-18_x"]
 
 [phases.install]
-# Install frontend dependencies first.
-# We need to specify the path for the command.
-cmds = ["cd frontend && npm install"]
+# Specify the exact install commands in the correct order.
+cmds = [
+    "pip install -r backend/requirements.txt",
+    "cd frontend && npm install"
+]
 
 [phases.build]
-# Build the frontend application.
-# We need to specify the path for the command.
+# Specify the frontend build command.
 cmds = ["cd frontend && npm run build"]
 
-# The start command is now taken from the Procfile's web process.
+# Define the start command directly here.
+# This replaces the Procfile.
+[start]
+cmd = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
