@@ -3,29 +3,20 @@ services:
   - type: web
     name: backend
     runtime: python
-    plan: free
+    plan: starter  # "starter" is the new free tier for web services
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
 
-  # Frontend: React
+  # Frontend: React (static site)
   - type: web
     name: frontend
     env: static
     rootDir: frontend
-    plan: free
     buildCommand: "npm install && npm run build"
     staticPublishPath: build
     envVars:
-      - key: REACT_APP_API_HOST
-        fromService:
-          type: web
-          name: backend
-          property: host
-      - key: REACT_APP_API_PORT
-        fromService:
-          type: web
-          name: backend
-          property: port
+      - key: REACT_APP_API_URL
+        value: "https://backend.onrender.com"  # replace after backend deploys
