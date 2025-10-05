@@ -1,53 +1,36 @@
 # backend/app/vector_index.py
 import os
-from langchain_community.document_loaders import PyPDFLoader  # type: ignore
-from langchain_openai import OpenAIEmbeddings  # type: ignore
-from langchain_community.vectorstores import FAISS  # type: ignore
-from dotenv import load_dotenv  # type: ignore
+from langchain.vectorstores.pgvector import PGVector
+from langchain.embeddings.openai import OpenAIEmbeddings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-# Load environment variables from .env file for local development
-load_dotenv()
+# --- Database Connection ---
+# The DATABASE_URL will be provided by Render's environment variables
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise ValueError("Missing OPENAI_API_KEY. Please set this environment variable in your hosting service (e.g., Render, Vercel).")
+# The collection name is used to store the vectors in the database
+COLLECTION_NAME = "smart_ai_agent_vectors"
 
-INDEX_DIR = os.getenv("INDEX_DIR", "./faiss_index")
+# Initialize OpenAI embeddings
+embeddings = OpenAIEmbeddings(openai_api_key=os.environ.get("OPENAI_API_KEY"))
 
-def build_index_from_paths(pdf_paths: list, index_dir=INDEX_DIR):
-    """
-    Build a FAISS vector index from given PDF files.
-    """
-    docs = []
-    for path in pdf_paths:
-        loader = PyPDFLoader(path)
-        docs.extend(loader.load())
+# --- PGVector Store ---
+# This object will be our primary interface for interacting with the database
+store = PGVector(
+    connection_string=DATABASE_URL,
+    embedding_function=embeddings,
+    collection_name=COLLECTION_NAME,
+)
 
-    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-    faiss_db = FAISS.from_documents(docs, embeddings)
 
-    # Save FAISS index locally
-    faiss_db.save_local(index_dir)
-    return faiss_db
+def get_retriever():
+    """Returns a retriever for the vector store."""
+    return store.as_retriever()
 
-def load_index(index_dir=INDEX_DIR):
-    """
-    Load an existing FAISS index from disk.
-    """
-    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-    if os.path.exists(index_dir):
-        return FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
-    return None
-
-def add_documents_to_index(documents, index_dir=INDEX_DIR):
-    """
-    Adds new documents to an existing FAISS index.
-    """
-    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
-    if os.path.exists(index_dir):
-        db = FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
-        db.add_documents(documents)
-    else:
-        db = FAISS.from_documents(documents, embeddings)
-    
-    db.save_local(index_dir)
+def add_documents_to_index(documents):
+    """Adds a list of documents to the vector store."""
+    # The add_documents function will handle embedding and storing the documents
+    store.add_documents(documents)

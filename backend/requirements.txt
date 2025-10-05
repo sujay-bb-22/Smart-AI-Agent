@@ -2,6 +2,8 @@ fastapi
 uvicorn
 langchain
 openai
-faiss-cpu
 pypdf
 python-dotenv
+psycopg2-binary
+SQLAlchemy
+pgvector
