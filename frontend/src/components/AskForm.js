@@ -9,7 +9,7 @@ function AskForm({ onNewAnswer }) {
     if (!question.trim()) return;
 
     try {
-      const response = await fetch('/api/qa/', {
+      const response = await fetch('https://ai-agent-backend-9wj4.onrender.com/api/qa/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
