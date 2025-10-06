@@ -1,7 +1,7 @@
 # backend/app/qa_pipeline.py
 from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
-from backend.app.vector_index import get_retriever
+from langchain_community.chat_models import ChatOpenAI
+from .vector_index import get_retriever
 import os
 
 # Initialize the language model
