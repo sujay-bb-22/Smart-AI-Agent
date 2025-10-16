@@ -1,17 +1,27 @@
 services:
-  - type: database
+  - type: pserv
     name: sra-db
+    dockerImage: postgres
     plan: free
-    databaseName: sra_db
-    user: user
-    password:
-      generateValue: true
+    envVars:
+      - key: POSTGRES_DB
+        value: sra_db
+      - key: POSTGRES_USER
+        value: user
+      - key: POSTGRES_PASSWORD
+        generateValue: true
+      - key: PGDATA
+        value: /var/lib/postgresql/data/pgdata
+    disk:
+      name: postgres-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
 
   - type: web
     name: sra-backend
     env: python
     plan: free
-    repo: https://github.com/your-username/your-repo-name
+    repo: https://github.com/your-username/your-repo-name # Replace this
     branch: main
     healthCheckPath: /health
     buildCommand: "pip install -r backend/requirements.txt"
@@ -19,23 +29,26 @@ services:
     envVars:
       - key: DATABASE_URL
         fromService:
-          type: database
+          type: pserv
           name: sra-db
           property: connectionString
       - key: WEB_CONCURRENCY
         value: 4
 
-  - type: web
+  - type: static_site
     name: sra-frontend
-    env: node
     plan: free
-    repo: https://github.com/your-username/your-repo-name
+    repo: https://github.com/your-username/your-repo-name # Replace this
     branch: main
     buildCommand: "cd frontend && npm install && npm run build"
-    staticPublishPath: "frontend/build"
-    envVars:
-      - key: REACT_APP_BACKEND_URL
-        fromService:
-          type: web
-          name: sra-backend
-          property: url
+    publishPath: "frontend/build"
+    routes:
+      - type: rewrite
+        source: /ask/
+        destination: /ask/
+      - type: rewrite
+        source: /upload_file/
+        destination: /upload_file/
+      - type: rewrite
+        source: /*
+        destination: /index.html
