@@ -1,7 +1,9 @@
 services:
   - type: pserv
     name: sra-db
-    dockerImageName: postgres
+    env: docker
+    dockerImage: postgres
+    plan: free
     envVars:
       - key: POSTGRES_DB
         value: sra_db
@@ -11,15 +13,18 @@ services:
         generateValue: true
       - key: PGDATA
         value: /var/lib/postgresql/data/pgdata
-    plan: free
 
   - type: web
     name: sra-backend
     env: python
-    repo: https://github.com/your-username/your-repo-name  # Replace with your repo URL
+    plan: free
+    repo: https://github.com/your-username/your-repo-name  # Replace this
     branch: main
     healthCheckPath: /
-    plan: free
+    buildCommand: |
+      pip install -r backend/requirements.txt
+    startCommand: |
+      cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         fromService:
@@ -28,20 +33,19 @@ services:
           property: connectionString
       - key: WEB_CONCURRENCY
         value: 4
-    buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 
   - type: web
     name: sra-frontend
     env: node
-    repo: https://github.com/your-username/your-repo-name  # Replace with your repo URL
-    branch: main
     plan: free
+    repo: https://github.com/your-username/your-repo-name  # Replace this
+    branch: main
+    buildCommand: |
+      cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
     envVars:
       - key: REACT_APP_BACKEND_URL
         fromService:
           type: web
           name: sra-backend
           property: url
-    buildCommand: "cd frontend && npm install && npm run build"
-    staticPublishPath: "frontend/build"
