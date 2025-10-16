@@ -1,7 +1,8 @@
 services:
+  # Postgres Database
   - type: pserv
     name: sra-db
-    dockerImage: postgres
+    dockerImageName: postgres   # changed from dockerImage
     plan: free
     envVars:
       - key: POSTGRES_DB
@@ -17,6 +18,7 @@ services:
       mountPath: /var/lib/postgresql/data
       sizeGB: 1
 
+  # Backend Service
   - type: web
     name: sra-backend
     env: python
@@ -35,13 +37,15 @@ services:
       - key: WEB_CONCURRENCY
         value: 4
 
-  - type: static_site
+  # Frontend Service (React)
+  - type: web                   # changed from static_site
     name: sra-frontend
+    env: node                    # added Node environment
     plan: free
     repo: https://github.com/your-username/your-repo-name # Replace this
     branch: main
     buildCommand: "cd frontend && npm install && npm run build"
-    publishPath: "frontend/build"
+    staticPublishPath: "frontend/build"   # changed from publishPath
     routes:
       - type: rewrite
         source: /ask/
