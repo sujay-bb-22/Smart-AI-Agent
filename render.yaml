@@ -18,7 +18,7 @@ services:
     plan: free
     repo: https://github.com/your-username/your-repo-name  # Replace this
     branch: main
-    healthCheckPath: /
+    healthCheckPath: /health
     buildCommand: "pip install -r backend/requirements.txt"
     startCommand: "cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
@@ -29,17 +29,20 @@ services:
           property: connectionString
       - key: WEB_CONCURRENCY
         value: 4
-  - type: static
+  - type: static_site
     name: sra-frontend
-    env: node
     plan: free
     repo: https://github.com/your-username/your-repo-name  # Replace this
     branch: main
     buildCommand: "cd frontend && npm install && npm run build"
-    staticPublishPath: frontend/build
-    envVars:
-      - key: REACT_APP_BACKEND_URL
-        fromService:
-          type: web
-          name: sra-backend
-          property: url
+    publishPath: "frontend/build"
+    routes:
+      - type: rewrite
+        source: /ask/
+        destination: https://sra-backend.onrender.com/ask/
+      - type: rewrite
+        source: /upload_file/
+        destination: https://sra-backend.onrender.com/upload_file/
+      - type: rewrite
+        source: /*
+        destination: /index.html
