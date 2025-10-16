@@ -1,23 +1,17 @@
 services:
-  - type: pserv
+  - type: database
     name: sra-db
-    dockerImage: postgres
     plan: free
-    envVars:
-      - key: POSTGRES_DB
-        value: sra_db
-      - key: POSTGRES_USER
-        value: user
-      - key: POSTGRES_PASSWORD
-        generateValue: true
-      - key: PGDATA
-        value: /var/lib/postgresql/data/pgdata
+    databaseName: sra_db
+    user: user
+    password:
+      generateValue: true
 
   - type: web
     name: sra-backend
     env: python
     plan: free
-    repo: https://github.com/your-username/your-repo-name  # Replace with your actual repo URL
+    repo: https://github.com/your-username/your-repo-name
     branch: main
     healthCheckPath: /health
     buildCommand: "pip install -r backend/requirements.txt"
@@ -25,7 +19,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromService:
-          type: pserv
+          type: database
           name: sra-db
           property: connectionString
       - key: WEB_CONCURRENCY
@@ -35,7 +29,7 @@ services:
     name: sra-frontend
     env: node
     plan: free
-    repo: https://github.com/your-username/your-repo-name  # Replace with your actual repo URL
+    repo: https://github.com/your-username/your-repo-name
     branch: main
     buildCommand: "cd frontend && npm install && npm run build"
     staticPublishPath: "frontend/build"
@@ -45,13 +39,3 @@ services:
           type: web
           name: sra-backend
           property: url
-    routes:
-      - type: rewrite
-        source: /ask/*
-        destination: https://sra-backend.onrender.com/ask/
-      - type: rewrite
-        source: /upload_file/*
-        destination: https://sra-backend.onrender.com/upload_file/
-      - type: rewrite
-        source: /*
-        destination: /index.html
