@@ -9,7 +9,7 @@ function AskForm({ onNewAnswer }) {
     if (!question.trim()) return;
 
     try {
-      const response = await fetch('https://ai-agent-backend-9wj4.onrender.com/api/qa/', {
+      const response = await fetch('/ask/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ function AskForm({ onNewAnswer }) {
       const data = await response.json();
       onNewAnswer(data);
       setError(null);
-    } catch (error) {
+    } catch (error) { 
       setError('Error fetching answer.');
       console.error('There was an error!', error);
     }
