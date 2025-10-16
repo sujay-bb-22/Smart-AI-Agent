@@ -1,4 +1,3 @@
-
 services:
   - type: pserv
     name: sra-db
@@ -17,7 +16,7 @@ services:
   - type: web
     name: sra-backend
     env: python
-    repo: https://github.com/your-username/your-repo-name # Replace with your repo URL
+    repo: https://github.com/your-username/your-repo-name  # Replace with your repo URL
     branch: main
     healthCheckPath: /
     plan: free
@@ -32,10 +31,10 @@ services:
     buildCommand: "pip install -r backend/requirements.txt"
     startCommand: "cd backend && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 
-  - type: static
+  - type: web
     name: sra-frontend
     env: node
-    repo: https://github.com/your-username/your-repo-name # Replace with your repo URL
+    repo: https://github.com/your-username/your-repo-name  # Replace with your repo URL
     branch: main
     plan: free
     envVars:
